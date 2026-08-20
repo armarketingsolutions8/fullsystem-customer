@@ -12,23 +12,41 @@
 </head>
 <body class="antialiased min-h-screen flex flex-col">
 
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="fixed inset-0 bg-white z-50 flex items-center justify-center">
+        <div class="text-center animate-pulse">
+            <div class="text-4xl mb-2">✂️</div>
+            <div class="font-bold text-gray-800">Memuatkan Sistem...</div>
+        </div>
+    </div>
+
+    <!-- Alert / Success Modal -->
+    <div id="alertModal" class="fixed inset-0 bg-black bg-opacity-60 z-[100] hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-xl shadow-2xl p-6 max-w-sm w-full text-center">
+            <div class="w-12 h-12 bg-green-100 text-green-600 rounded-full mx-auto flex items-center justify-center text-xl font-bold mb-3">✓</div>
+            <h3 id="alertTitle" class="text-xl font-bold text-gray-900 mb-2">Berjaya</h3>
+            <p id="alertMessage" class="text-gray-600 mb-6 text-sm whitespace-pre-line"></p>
+            <button onclick="closeModal()" class="w-full bg-[#111827] text-white py-2.5 rounded-lg font-semibold hover:bg-gray-800 transition">Tutup</button>
+        </div>
+    </div>
+
     <!-- Top Navigation Bar -->
     <nav class="bg-[#111827] text-white px-6 py-4 flex justify-between items-center shadow-md">
-        <div class="text-xl font-bold tracking-widest uppercase">The Q Barbershop</div>
-        <div class="text-gray-300 hover:text-white cursor-pointer">
+        <div class="text-xl font-bold tracking-widest uppercase">THE Q BARBERSHOP</div>
+        <div onclick="showView('view-menu')" class="text-gray-300 hover:text-white cursor-pointer">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
         </div>
     </nav>
 
     <!-- Main Container -->
-    <main class="flex-1 flex flex-col items-center mt-12 px-4 w-full max-w-4xl mx-auto">
+    <main class="flex-1 flex flex-col items-center mt-12 px-4 w-full max-w-4xl mx-auto mb-12">
         
-        <!-- VIEW 1: Main Menu -->
-        <div id="view-menu" class="w-full text-center flex flex-col items-center animate-fade-in">
-            <p class="text-sm text-gray-500 uppercase tracking-widest mb-2">Welcome to</p>
-            <h1 class="text-3xl font-extrabold text-gray-900 mb-4 uppercase">The Q Barbershop</h1>
+        <!-- VIEW 1: Main Menu (2 Big Buttons) -->
+        <div id="view-menu" class="w-full text-center flex flex-col items-center">
+            <p class="text-sm text-gray-500 uppercase tracking-widest mb-2 font-medium">WELCOME TO</p>
+            <h1 class="text-3xl font-extrabold text-gray-900 mb-4 uppercase tracking-wide">THE Q BARBERSHOP</h1>
             <p class="text-gray-500 mb-10 max-w-md">Experience the best grooming service in town. Walk in or book your preferred time.</p>
 
             <div class="flex flex-col sm:flex-row gap-6 w-full max-w-2xl justify-center">
@@ -50,32 +68,29 @@
 
         <!-- VIEW 2: Join Queue Form -->
         <div id="view-queue" class="hidden w-full max-w-lg bg-white rounded-xl shadow-md p-8 border border-gray-100">
-            <h2 class="text-2xl font-bold text-center mb-6 flex items-center justify-center gap-2">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path></svg>
-                Get Queue Number
-            </h2>
-            <form class="space-y-4">
+            <h2 class="text-2xl font-bold text-center mb-6 text-gray-900">Get Queue Number</h2>
+            <form id="formQueue" onsubmit="submitQueue(event)" class="space-y-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Select Service *</label>
-                    <select class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
-                        <option>Gunting Rambut Biasa - 30m</option>
+                    <select id="qService" required class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white">
+                        <option value="">Memuatkan servis...</option>
                     </select>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Select Barber (Optional)</label>
-                    <select class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
-                        <option>Any Barber</option>
+                    <select id="qBarber" class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white">
+                        <option value="Any">Any Barber</option>
                     </select>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Your Name *</label>
-                    <input type="text" placeholder="John Doe" class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                    <input type="text" id="qName" required placeholder="John Doe" class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number *</label>
-                    <input type="text" placeholder="0123456789" class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                    <input type="tel" id="qPhone" required placeholder="0123456789" class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
                 </div>
-                <button type="button" class="w-full bg-[#111827] text-white py-3.5 rounded-lg font-bold hover:bg-gray-800 transition mt-6">JOIN QUEUE</button>
+                <button type="submit" id="btnQueue" class="w-full bg-[#111827] text-white py-3.5 rounded-lg font-bold hover:bg-gray-800 transition mt-6 shadow-md">JOIN QUEUE</button>
                 <div class="text-center mt-4">
                     <button type="button" onclick="showView('view-menu')" class="text-gray-500 hover:text-gray-800 text-sm font-medium">Cancel</button>
                 </div>
@@ -84,42 +99,39 @@
 
         <!-- VIEW 3: Book Appointment Form -->
         <div id="view-book" class="hidden w-full max-w-lg bg-white rounded-xl shadow-md p-8 border border-gray-100">
-            <h2 class="text-2xl font-bold text-center mb-6 flex items-center justify-center gap-2">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                Book Appointment
-            </h2>
-            <form class="space-y-4">
+            <h2 class="text-2xl font-bold text-center mb-6 text-gray-900">Book Appointment</h2>
+            <form id="formBook" onsubmit="submitBooking(event)" class="space-y-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Select Service *</label>
-                    <select class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
-                        <option>Select Service</option>
+                    <select id="bService" required class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white">
+                        <option value="">Memuatkan servis...</option>
                     </select>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Select Barber *</label>
-                    <select class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
-                        <option>Select Barber</option>
+                    <select id="bBarber" required class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white">
+                        <option value="Any">Select Barber</option>
                     </select>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Date *</label>
-                        <input type="date" class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                        <input type="date" id="bDate" required class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Time *</label>
-                        <input type="time" class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                        <input type="time" id="bTime" required class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
                     </div>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Your Name *</label>
-                    <input type="text" placeholder="John Doe" class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                    <input type="text" id="bName" required placeholder="John Doe" class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number *</label>
-                    <input type="text" placeholder="0123456789" class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                    <input type="tel" id="bPhone" required placeholder="0123456789" class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
                 </div>
-                <button type="button" class="w-full bg-[#111827] text-white py-3.5 rounded-lg font-bold hover:bg-gray-800 transition mt-6">CONFIRM BOOKING</button>
+                <button type="submit" id="btnBook" class="w-full bg-[#111827] text-white py-3.5 rounded-lg font-bold hover:bg-gray-800 transition mt-6 shadow-md">CONFIRM BOOKING</button>
                 <div class="text-center mt-4">
                     <button type="button" onclick="showView('view-menu')" class="text-gray-500 hover:text-gray-800 text-sm font-medium">Cancel</button>
                 </div>
@@ -128,15 +140,167 @@
 
     </main>
 
-    <script>
-        // Fungsi mudah untuk tukar paparan form (macam dalam video)
-        function showView(viewId) {
+    <!-- Firebase Script & Logic -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.0/firebase-app.js";
+        import { getFirestore, collection, getDocs, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.3.0/firebase-firestore.js";
+
+        // Konfigurasi Firebase anda
+        const firebaseConfig = {
+            apiKey: "AIzaSyBKVXr6MNUn6XiHCCRo69fiGa5BFmhHoSI",
+            authDomain: "fullsystem-fbed2.firebaseapp.com",
+            projectId: "fullsystem-fbed2",
+            storageBucket: "fullsystem-fbed2.firebasestorage.app",
+            messagingSenderId: "1074278839562",
+            appId: "1:1074278839562:web:a2eddc8225c9d65c1076f3"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Kawalan Pertukaran Paparan (SPA Views)
+        window.showView = (viewId) => {
             document.getElementById('view-menu').classList.add('hidden');
             document.getElementById('view-queue').classList.add('hidden');
             document.getElementById('view-book').classList.add('hidden');
             
             document.getElementById(viewId).classList.remove('hidden');
+            window.scrollTo(0, 0);
+        };
+
+        window.closeModal = () => {
+            document.getElementById('alertModal').classList.add('hidden');
+            document.getElementById('formQueue').reset();
+            document.getElementById('formBook').reset();
+            showView('view-menu');
+        };
+
+        function showModal(title, msg) {
+            document.getElementById('alertTitle').innerText = title;
+            document.getElementById('alertMessage').innerText = msg;
+            document.getElementById('alertModal').classList.remove('hidden');
         }
+
+        // Ambil Data Servis dan Barber secara "Live" dari Firebase
+        async function loadDropdownData() {
+            try {
+                // Ambil Services
+                const serviceSnap = await getDocs(collection(db, 'services'));
+                let serviceHTML = '<option value="">Select Service</option>';
+                serviceSnap.forEach(doc => {
+                    const data = doc.data();
+                    serviceHTML += `<option value="${doc.id}" data-name="${data.name}">${data.name} (RM${data.price ? data.price.toFixed(2) : '0.00'})</option>`;
+                });
+                
+                document.getElementById('qService').innerHTML = serviceHTML;
+                document.getElementById('bService').innerHTML = serviceHTML;
+
+                // Ambil Barbers
+                const barberSnap = await getDocs(collection(db, 'barbers'));
+                let barberQueueHTML = '<option value="Any">Any Barber</option>';
+                let barberBookHTML = '<option value="">Select Barber</option>';
+                
+                barberSnap.forEach(doc => {
+                    const data = doc.data();
+                    barberQueueHTML += `<option value="${doc.id}" data-name="${data.name}">${data.name}</option>`;
+                    barberBookHTML += `<option value="${doc.id}" data-name="${data.name}">${data.name}</option>`;
+                });
+
+                document.getElementById('qBarber').innerHTML = barberQueueHTML;
+                document.getElementById('bBarber').innerHTML = barberBookHTML;
+
+                // Sembunyikan loading screen
+                document.getElementById('loadingOverlay').classList.add('hidden');
+
+            } catch (error) {
+                console.error("Gagal muat data:", error);
+                document.getElementById('loadingOverlay').classList.add('hidden');
+                alert("Gagal berhubung ke pangkalan data. Sila refresh halaman.");
+            }
+        }
+
+        // Muat data semasa mula buka page
+        loadDropdownData();
+
+        // SUBMIT GILIRAN (QUEUE)
+        window.submitQueue = async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btnQueue');
+            btn.disabled = true;
+            btn.innerText = "Sila Tunggu...";
+
+            try {
+                const serviceEl = document.getElementById('qService');
+                const barberEl = document.getElementById('qBarber');
+                
+                const sName = serviceEl.options[serviceEl.selectedIndex].getAttribute('data-name');
+                const bName = barberEl.value === 'Any' ? 'Any' : barberEl.options[barberEl.selectedIndex].getAttribute('data-name');
+
+                const ranNum = Math.floor(100 + Math.random() * 900);
+                const qNumber = "A" + ranNum;
+
+                const payload = {
+                    customerName: document.getElementById('qName').value,
+                    phone: document.getElementById('qPhone').value,
+                    serviceId: serviceEl.value,
+                    serviceName: sName,
+                    barberId: barberEl.value,
+                    barberName: bName,
+                    queueNumber: qNumber,
+                    status: 'Waiting',
+                    createdAt: serverTimestamp()
+                };
+
+                await addDoc(collection(db, 'queues'), payload);
+                showModal("Tiket Berjaya Diambil!", `Nombor giliran anda ialah: ${qNumber}\nSila tunggu sehingga nombor anda dipanggil.`);
+
+            } catch (error) {
+                console.error(error);
+                alert("Ralat semasa mengambil tiket giliran.");
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "JOIN QUEUE";
+            }
+        };
+
+        // SUBMIT TEMPAHAN (BOOKING)
+        window.submitBooking = async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btnBook');
+            btn.disabled = true;
+            btn.innerText = "Sila Tunggu...";
+
+            try {
+                const serviceEl = document.getElementById('bService');
+                const barberEl = document.getElementById('bBarber');
+                
+                const sName = serviceEl.options[serviceEl.selectedIndex].getAttribute('data-name');
+                const bName = barberEl.options[barberEl.selectedIndex].getAttribute('data-name');
+
+                const payload = {
+                    customerName: document.getElementById('bName').value,
+                    phone: document.getElementById('bPhone').value,
+                    date: document.getElementById('bDate').value,
+                    time: document.getElementById('bTime').value,
+                    serviceId: serviceEl.value,
+                    serviceName: sName,
+                    barberId: barberEl.value,
+                    barberName: bName,
+                    status: 'Confirmed',
+                    createdAt: serverTimestamp()
+                };
+
+                await addDoc(collection(db, 'bookings'), payload);
+                showModal("Tempahan Berjaya!", "Tempahan anda telah direkodkan ke dalam sistem kami. Terima kasih!");
+
+            } catch (error) {
+                console.error(error);
+                alert("Ralat semasa menghantar tempahan.");
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "CONFIRM BOOKING";
+            }
+        };
     </script>
 </body>
 </html>
