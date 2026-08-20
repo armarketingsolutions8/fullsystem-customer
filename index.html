@@ -3,227 +3,133 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Customer Portal - Barbershop Pro</title>
+    <title>Barbershop - Tempahan & Giliran</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@400;600;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: { 
-                        sans: ['Inter', 'sans-serif'],
-                        display: ['Outfit', 'sans-serif']
-                    },
-                    colors: { 
-                        admin: '#0f172a', 
-                        accent: '#3b82f6', 
-                        success: '#10b981', 
-                        danger: '#ef4444', 
-                        warning: '#f59e0b',
-                        gold: '#d97706'
-                    }
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: { brand: '#0f172a', accent: '#3b82f6' }
                 }
             }
         }
     </script>
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        .hidden-view { display: none !important; }
-        .scrollbar-hide::-webkit-scrollbar { display: none; }
-        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-        .glass-panel { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(12px); border: 1px solid rgba(229, 231, 235, 0.8); }
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        .tab-active { border-bottom: 2px solid #3b82f6; color: #3b82f6; font-weight: 600; }
+        .tab-inactive { color: #64748b; font-weight: 500; }
     </style>
 </head>
-<body class="text-gray-800 antialiased h-screen flex flex-col overflow-hidden bg-slate-900">
+<body class="antialiased min-h-screen flex flex-col items-center justify-center p-4">
 
-    <!-- Alert Modal -->
-    <div id="alertModal" class="fixed inset-0 bg-black/70 z-[100] hidden flex items-center justify-center p-4 backdrop-blur-md">
-        <div class="bg-white rounded-2xl shadow-2xl p-6 max-w-sm w-full text-center border border-gray-100 transform transition-all scale-100">
-            <div id="alertIcon" class="w-12 h-12 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto mb-3 text-xl">
-                <i class="fa-solid fa-circle-info"></i>
-            </div>
-            <h3 id="alertTitle" class="text-lg font-bold text-gray-900 mb-1">Notice</h3>
-            <p id="alertMessage" class="text-sm text-gray-600 mb-6 leading-relaxed"></p>
-            <button onclick="closeModal('alertModal')" class="w-full bg-slate-900 text-white py-2.5 rounded-xl font-bold hover:bg-slate-800 transition active:scale-95 shadow-md">Close</button>
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="fixed inset-0 bg-white z-50 flex items-center justify-center">
+        <div class="text-center animate-pulse">
+            <div class="text-4xl mb-2">✂️</div>
+            <div class="font-bold text-gray-800">Memuatkan Sistem...</div>
         </div>
     </div>
 
-    <!-- ========================================== -->
-    <!-- CUSTOMER PORTAL ROLE SHELL -->
-    <!-- ========================================== -->
-    <main class="flex-1 flex flex-col items-center justify-center p-4 sm:p-6 overflow-y-auto bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-        
-        <div class="w-full max-w-md relative my-auto">
-            
-            <!-- Home Screen -->
-            <div id="custHomeView" class="glass-panel p-6 sm:p-8 text-center rounded-3xl shadow-2xl border border-white/10 text-white space-y-6">
-                <div class="w-20 h-20 mx-auto rounded-full bg-gradient-to-tr from-amber-500 to-amber-300 text-slate-900 flex items-center justify-center text-3xl font-black shadow-xl">
-                    <i class="fa-solid fa-scissors"></i>
-                </div>
-                <div>
-                    <h2 class="text-2xl font-extrabold font-display tracking-tight text-white">Welcome Guest</h2>
-                    <p class="text-slate-300 text-xs mt-1">Book your cut or join the walk-in queue online</p>
-                </div>
-                
-                <div class="grid gap-3 pt-2">
-                    <button onclick="navigateCust('custJoinQueueView')" class="bg-amber-500 hover:bg-amber-400 text-slate-950 py-4 rounded-2xl font-extrabold shadow-lg transition active:scale-98 flex items-center justify-center gap-3 text-base">
-                        <i class="fa-solid fa-ticket text-xl"></i>
-                        <span>JOIN WALK-IN QUEUE</span>
-                    </button>
-                    <button onclick="navigateCust('custBookView')" class="bg-white/10 hover:bg-white/20 text-white border border-white/20 py-3.5 rounded-2xl font-bold transition flex items-center justify-center gap-3 text-sm">
-                        <i class="fa-solid fa-calendar-plus text-lg text-amber-400"></i>
-                        <span>BOOK AN APPOINTMENT</span>
-                    </button>
-                    <button onclick="navigateCust('custTrackView')" class="bg-slate-800/80 hover:bg-slate-800 text-slate-200 py-3 rounded-2xl font-semibold transition flex items-center justify-center gap-2 text-xs">
-                        <i class="fa-solid fa-magnifying-glass text-accent"></i>
-                        <span>CHECK MY TICKET STATUS</span>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Join Queue Screen -->
-            <div id="custJoinQueueView" class="glass-panel p-6 sm:p-8 hidden-view rounded-3xl shadow-2xl text-slate-800 bg-white">
-                <div class="flex items-center mb-6">
-                    <button onclick="navigateCust('custHomeView')" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-slate-200 mr-3">
-                        <i class="fa-solid fa-arrow-left"></i>
-                    </button>
-                    <h2 class="text-lg font-bold text-slate-900">Get Walk-in Queue Token</h2>
-                </div>
-                
-                <form id="joinQueueForm" class="space-y-3.5 text-xs" onsubmit="handleJoinQueue(event)">
-                    <div>
-                        <label class="block font-bold text-slate-700 mb-1">Your Name *</label>
-                        <input type="text" id="qName" required placeholder="e.g. Alex Tan" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-semibold outline-none focus:ring-2 focus:ring-amber-500">
-                    </div>
-                    <div>
-                        <label class="block font-bold text-slate-700 mb-1">Phone Number *</label>
-                        <input type="tel" id="qPhone" required placeholder="e.g. 0123456789" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-semibold outline-none focus:ring-2 focus:ring-amber-500">
-                    </div>
-                    <div>
-                        <label class="block font-bold text-slate-700 mb-1">Select Service *</label>
-                        <select id="qService" required class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-semibold outline-none focus:ring-2 focus:ring-amber-500">
-                            <option value="">Loading services...</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block font-bold text-slate-700 mb-1">Preferred Barber (Optional)</label>
-                        <select id="qBarber" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-semibold outline-none focus:ring-2 focus:ring-amber-500">
-                            <option value="Any">Any Available Barber</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block font-bold text-slate-700 mb-1">Pax Count</label>
-                        <input type="number" id="qPax" value="1" min="1" max="5" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-semibold outline-none">
-                    </div>
-                    <button type="submit" id="btnJoinQueue" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 py-3.5 rounded-xl font-black shadow-lg transition mt-4 text-sm">
-                        TAKE QUEUE NUMBER
-                    </button>
-                </form>
-            </div>
-
-            <!-- Book Appointment Screen -->
-            <div id="custBookView" class="glass-panel p-6 sm:p-8 hidden-view rounded-3xl shadow-2xl text-slate-800 bg-white">
-                <div class="flex items-center mb-6">
-                    <button onclick="navigateCust('custHomeView')" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-slate-200 mr-3">
-                        <i class="fa-solid fa-arrow-left"></i>
-                    </button>
-                    <h2 class="text-lg font-bold text-slate-900">Book Appointment</h2>
-                </div>
-                
-                <form id="bookForm" class="space-y-3.5 text-xs" onsubmit="handleBooking(event)">
-                    <div>
-                        <label class="block font-bold text-slate-700 mb-1">Your Name *</label>
-                        <input type="text" id="bName" required placeholder="e.g. Sarah Lee" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-semibold outline-none focus:ring-2 focus:ring-amber-500">
-                    </div>
-                    <div>
-                        <label class="block font-bold text-slate-700 mb-1">Phone Number *</label>
-                        <input type="tel" id="bPhone" required placeholder="e.g. 0198765432" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-semibold outline-none focus:ring-2 focus:ring-amber-500">
-                    </div>
-                    <div class="grid grid-cols-2 gap-3">
-                        <div>
-                            <label class="block font-bold text-slate-700 mb-1">Date *</label>
-                            <input type="date" id="bDate" required class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-semibold outline-none">
-                        </div>
-                        <div>
-                            <label class="block font-bold text-slate-700 mb-1">Time *</label>
-                            <input type="time" id="bTime" required class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-semibold outline-none">
-                        </div>
-                    </div>
-                    <div>
-                        <label class="block font-bold text-slate-700 mb-1">Select Service *</label>
-                        <select id="bService" required class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-semibold outline-none">
-                            <option value="">Loading services...</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block font-bold text-slate-700 mb-1">Preferred Barber (Optional)</label>
-                        <select id="bBarber" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-semibold outline-none">
-                            <option value="Any">Any Available Barber</option>
-                        </select>
-                    </div>
-                    <button type="submit" id="btnBook" class="w-full bg-slate-900 hover:bg-slate-800 text-white py-3.5 rounded-xl font-black shadow-lg transition mt-4 text-sm">
-                        CONFIRM BOOKING
-                    </button>
-                </form>
-            </div>
-
-            <!-- Track Status Screen -->
-            <div id="custTrackView" class="glass-panel p-6 sm:p-8 hidden-view rounded-3xl shadow-2xl text-slate-800 bg-white space-y-5">
-                <div class="flex items-center">
-                    <button onclick="navigateCust('custHomeView')" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-slate-200 mr-3">
-                        <i class="fa-solid fa-arrow-left"></i>
-                    </button>
-                    <h2 class="text-lg font-bold text-slate-900">Track Queue Status</h2>
-                </div>
-                
-                <div>
-                    <label class="block text-xs font-bold text-slate-600 mb-2">Enter Your Queue Number</label>
-                    <div class="flex gap-2">
-                        <input type="text" id="trackInput" placeholder="e.g. A001" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-extrabold uppercase outline-none text-base">
-                        <button onclick="searchStatus()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 px-5 rounded-xl font-extrabold transition text-xs shrink-0">Track</button>
-                    </div>
-                </div>
-
-                <div id="trackResult" class="hidden flex flex-col items-center bg-slate-50 p-6 rounded-2xl border border-slate-200 text-center">
-                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1">Your Token</p>
-                    <h1 id="trNumber" class="text-5xl font-black text-slate-900 font-display tracking-tight mb-3">--</h1>
-                    
-                    <div id="trStatusBadge" class="px-4 py-1.5 rounded-full text-xs font-extrabold mb-6 bg-amber-100 text-amber-800">
-                        WAITING
-                    </div>
-
-                    <div class="w-full space-y-3 text-xs">
-                        <div class="flex justify-between border-b border-slate-200/60 pb-2">
-                            <span class="text-slate-500 font-medium">People Ahead</span>
-                            <span id="trAhead" class="font-bold text-slate-900">-</span>
-                        </div>
-                        <div class="flex justify-between border-b border-slate-200/60 pb-2">
-                            <span class="text-slate-500 font-medium">Est. Wait Time</span>
-                            <span id="trWait" class="font-bold text-slate-900">-</span>
-                        </div>
-                        <div id="trCounterBox" class="hidden justify-between border-b border-slate-200/60 pb-2 bg-emerald-50 p-3 rounded-xl border border-emerald-200">
-                            <span class="text-emerald-700 font-bold">Please proceed to</span>
-                            <span id="trCounter" class="font-black text-emerald-800 text-base">--</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
+    <!-- Alert Modal -->
+    <div id="alertModal" class="fixed inset-0 bg-black bg-opacity-60 z-[100] hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-xl shadow-2xl p-6 max-w-sm w-full text-center">
+            <h3 id="alertTitle" class="text-xl font-bold text-gray-900 mb-2">Berjaya</h3>
+            <p id="alertMessage" class="text-gray-600 mb-6 text-sm"></p>
+            <button onclick="closeModal()" class="w-full bg-brand text-white py-2.5 rounded-lg font-semibold hover:bg-gray-800 transition">Tutup</button>
         </div>
-    </main>
+    </div>
 
-    <!-- ========================================== -->
-    <!-- APPLICATION JAVASCRIPT LOGIC -->
-    <!-- ========================================== -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
-        import { getFirestore, collection, addDoc, onSnapshot, doc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
-
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'fullsystem-fbed2';
+    <div class="w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden">
         
+        <!-- Header -->
+        <div class="bg-brand p-6 text-center text-white">
+            <div class="w-16 h-16 bg-accent rounded-full mx-auto flex items-center justify-center text-2xl shadow-lg mb-3">✂️</div>
+            <h1 class="text-2xl font-bold tracking-wide">BARBERSHOP</h1>
+            <p class="text-gray-300 text-sm mt-1">Sistem Tempahan & Tiket Giliran</p>
+        </div>
+
+        <!-- Tabs -->
+        <div class="flex border-b border-gray-200">
+            <button onclick="switchTab('queue')" id="tabQueue" class="flex-1 py-4 text-center tab-active transition">Ambil Giliran (Kini)</button>
+            <button onclick="switchTab('book')" id="tabBook" class="flex-1 py-4 text-center tab-inactive transition">Tempah Awal</button>
+        </div>
+
+        <div class="p-6">
+            <!-- QUEUE FORM -->
+            <form id="formQueue" onsubmit="submitQueue(event)" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Nama Anda</label>
+                    <input type="text" id="qName" required class="w-full p-3 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-accent" placeholder="Cth: Ahmad">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">No. Telefon</label>
+                    <input type="tel" id="qPhone" required class="w-full p-3 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-accent" placeholder="0123456789">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Pilih Servis</label>
+                    <select id="qService" required class="w-full p-3 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-accent bg-white">
+                        <option value="">Memuatkan servis...</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Pilih Barber (Pilihan)</label>
+                    <select id="qBarber" class="w-full p-3 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-accent bg-white">
+                        <option value="Any">Memuatkan barber...</option>
+                    </select>
+                </div>
+                
+                <button type="submit" id="btnQueue" class="w-full bg-accent text-white py-3.5 rounded-lg font-bold hover:bg-blue-600 transition shadow-md mt-4">
+                    AMBIL TIKET GILIRAN
+                </button>
+            </form>
+
+            <!-- BOOKING FORM -->
+            <form id="formBook" onsubmit="submitBooking(event)" class="space-y-4 hidden">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Nama Anda</label>
+                    <input type="text" id="bName" required class="w-full p-3 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-accent" placeholder="Cth: Ahmad">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">No. Telefon</label>
+                    <input type="tel" id="bPhone" required class="w-full p-3 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-accent" placeholder="0123456789">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Tarikh</label>
+                        <input type="date" id="bDate" required class="w-full p-3 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-accent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Masa</label>
+                        <input type="time" id="bTime" required class="w-full p-3 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-accent">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Pilih Servis</label>
+                    <select id="bService" required class="w-full p-3 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-accent bg-white">
+                        <option value="">Memuatkan servis...</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Pilih Barber (Pilihan)</label>
+                    <select id="bBarber" class="w-full p-3 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-accent bg-white">
+                        <option value="Any">Memuatkan barber...</option>
+                    </select>
+                </div>
+
+                <button type="submit" id="btnBook" class="w-full bg-brand text-white py-3.5 rounded-lg font-bold hover:bg-gray-800 transition shadow-md mt-4">
+                    SAHKAN TEMPAHAN
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.0/firebase-app.js";
+        import { getFirestore, collection, getDocs, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.3.0/firebase-firestore.js";
+
+        // Guna config Firebase yang sama seperti Owner Portal
         const firebaseConfig = {
             apiKey: "AIzaSyBKVXr6MNUn6XiHCCRo69fiGa5BFmhHoSI",
             authDomain: "fullsystem-fbed2.firebaseapp.com",
@@ -235,193 +141,156 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        const auth = getAuth(app);
 
-        const getCol = (colName) => collection(db, 'artifacts', appId, 'public', 'data', colName);
-
-        // Global State
-        let currentUser = null;
-        let data = { queues: [], services: [], barbers: [] };
-
-        window.addEventListener('DOMContentLoaded', async () => {
-            try {
-                if (typeof __initial_auth_token !== 'undefined') {
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    await signInAnonymously(auth);
-                }
-                currentUser = auth.currentUser;
-                console.log("Firebase Auth success:", currentUser.uid);
-                initRealtimeListeners();
-            } catch (err) {
-                console.warn("Firebase Auth warning, using fallback local sync:", err);
-                initRealtimeListeners();
+        // Kawalan Tab
+        window.switchTab = (tab) => {
+            if (tab === 'queue') {
+                document.getElementById('formQueue').classList.remove('hidden');
+                document.getElementById('formBook').classList.add('hidden');
+                document.getElementById('tabQueue').className = 'flex-1 py-4 text-center tab-active transition';
+                document.getElementById('tabBook').className = 'flex-1 py-4 text-center tab-inactive transition';
+            } else {
+                document.getElementById('formQueue').classList.add('hidden');
+                document.getElementById('formBook').classList.remove('hidden');
+                document.getElementById('tabBook').className = 'flex-1 py-4 text-center tab-active transition';
+                document.getElementById('tabQueue').className = 'flex-1 py-4 text-center tab-inactive transition';
             }
-        });
-
-        function initRealtimeListeners() {
-            const collections = ['queues', 'services', 'barbers'];
-            
-            collections.forEach(col => {
-                onSnapshot(getCol(col), (snapshot) => {
-                    data[col] = [];
-                    snapshot.forEach(docSnap => data[col].push({ id: docSnap.id, ...docSnap.data() }));
-                    
-                    if (col === 'queues') {
-                        data[col].sort((a,b) => {
-                            let tA = a.createdAt?.toMillis ? a.createdAt.toMillis() : (a.timestamp || 0);
-                            let tB = b.createdAt?.toMillis ? b.createdAt.toMillis() : (b.timestamp || 0);
-                            return tB - tA; // Descending
-                        });
-                    }
-                    
-                    refreshAllUI();
-                }, (error) => {
-                    console.error(`${col} Listener Error:`, error);
-                });
-            });
-        }
-
-        function refreshAllUI() {
-            populateCustDropdowns();
-            updateCustTracking();
-        }
-
-        window.navigateCust = (viewId) => {
-            const views = ['custHomeView', 'custJoinQueueView', 'custBookView', 'custTrackView'];
-            views.forEach(v => document.getElementById(v)?.classList.add('hidden-view'));
-            document.getElementById(viewId)?.classList.remove('hidden-view');
-            populateCustDropdowns();
         };
 
-        function populateCustDropdowns() {
-            const sHtml = '<option value="">Select Service...</option>' + data.services.map(s => `<option value="${s.id}">${s.name} - RM${parseFloat(s.price).toFixed(2)}</option>`).join('');
-            const bHtml = '<option value="Any">Any Available Barber</option>' + data.barbers.map(b => `<option value="${b.id}">${b.name}</option>`).join('');
-            
-            if(document.getElementById('qService')) document.getElementById('qService').innerHTML = sHtml;
-            if(document.getElementById('qBarber')) document.getElementById('qBarber').innerHTML = bHtml;
-            if(document.getElementById('bService')) document.getElementById('bService').innerHTML = sHtml;
-            if(document.getElementById('bBarber')) document.getElementById('bBarber').innerHTML = bHtml;
+        window.closeModal = () => {
+            document.getElementById('alertModal').classList.add('hidden');
+            document.getElementById('formQueue').reset();
+            document.getElementById('formBook').reset();
+        };
+
+        function showModal(title, msg) {
+            document.getElementById('alertTitle').innerText = title;
+            document.getElementById('alertMessage').innerText = msg;
+            document.getElementById('alertModal').classList.remove('hidden');
         }
 
-        window.handleJoinQueue = async (e) => {
+        // Ambil Data Servis dan Barber secara "Live" semasa page dibuka
+        async function loadDropdownData() {
+            try {
+                // Ambil Services
+                const serviceSnap = await getDocs(collection(db, 'services'));
+                let serviceHTML = '<option value="">-- Sila Pilih Servis --</option>';
+                serviceSnap.forEach(doc => {
+                    const data = doc.data();
+                    serviceHTML += `<option value="${doc.id}" data-name="${data.name}">${data.name} (RM${data.price.toFixed(2)})</option>`;
+                });
+                
+                // Masukkan ke dropdown form Queue & Book
+                document.getElementById('qService').innerHTML = serviceHTML;
+                document.getElementById('bService').innerHTML = serviceHTML;
+
+                // Ambil Barbers
+                const barberSnap = await getDocs(collection(db, 'barbers'));
+                let barberHTML = '<option value="Any">Mana-mana Barber (Any)</option>';
+                barberSnap.forEach(doc => {
+                    const data = doc.data();
+                    barberHTML += `<option value="${doc.id}" data-name="${data.name}">${data.name}</option>`;
+                });
+
+                // Masukkan ke dropdown form Queue & Book
+                document.getElementById('qBarber').innerHTML = barberHTML;
+                document.getElementById('bBarber').innerHTML = barberHTML;
+
+                // Tutup Loading screen selepas data siap dimuat turun
+                document.getElementById('loadingOverlay').classList.add('hidden');
+
+            } catch (error) {
+                console.error("Gagal muat data:", error);
+                alert("Gagal berhubung ke pangkalan data. Sila refresh halaman.");
+            }
+        }
+
+        // Jalankan fungsi load data
+        loadDropdownData();
+
+        // ------------------
+        // SUBMIT GILIRAN
+        // ------------------
+        window.submitQueue = async (e) => {
             e.preventDefault();
-            const btn = document.getElementById('btnJoinQueue');
+            const btn = document.getElementById('btnQueue');
             btn.disabled = true;
-            btn.innerText = "GENERATING TICKET...";
+            btn.innerText = "Sila Tunggu...";
 
             try {
-                const count = data.queues.length + 1;
-                const queueNumber = `A${String(count).padStart(3, '0')}`;
-                const serviceId = document.getElementById('qService').value;
-                const serviceObj = data.services.find(s => s.id === serviceId);
+                const serviceEl = document.getElementById('qService');
+                const barberEl = document.getElementById('qBarber');
+                
+                const sName = serviceEl.options[serviceEl.selectedIndex].getAttribute('data-name');
+                const bName = barberEl.value === 'Any' ? 'Any' : barberEl.options[barberEl.selectedIndex].getAttribute('data-name');
 
-                await addDoc(getCol('queues'), {
-                    queueNumber,
+                // Hasilkan nombor giliran automatik (cth: A-842)
+                const ranNum = Math.floor(100 + Math.random() * 900);
+                const qNumber = "A" + ranNum;
+
+                const payload = {
                     customerName: document.getElementById('qName').value,
                     phone: document.getElementById('qPhone').value,
-                    serviceId,
-                    serviceName: serviceObj?.name || 'Haircut',
-                    barberId: document.getElementById('qBarber').value,
-                    pax: parseInt(document.getElementById('qPax').value || 1),
+                    serviceId: serviceEl.value,
+                    serviceName: sName,
+                    barberId: barberEl.value,
+                    barberName: bName,
+                    queueNumber: qNumber,
                     status: 'Waiting',
-                    createdAt: Date.now()
-                });
+                    createdAt: serverTimestamp()
+                };
 
-                document.getElementById('joinQueueForm').reset();
-                document.getElementById('trackInput').value = queueNumber;
-                navigateCust('custTrackView');
-                searchStatus();
-                showAlertModal("Queue Ticket Created", `Your queue number is ${queueNumber}. Track your turn live!`);
+                await addDoc(collection(db, 'queues'), payload);
+                showModal("Tiket Berjaya Diambil!", `Nombor giliran anda ialah: ${qNumber}\nSila tunggu sehingga nombor anda dipanggil di skrin TV.`);
 
-            } catch(e) {
-                console.error(e);
-                showAlertModal("Error", "Could not submit queue request.");
+            } catch (error) {
+                console.error(error);
+                alert("Ralat semasa mengambil tiket giliran.");
             } finally {
                 btn.disabled = false;
-                btn.innerText = "TAKE QUEUE NUMBER";
+                btn.innerText = "AMBIL TIKET GILIRAN";
             }
         };
 
-        window.handleBooking = async (e) => {
+        // ------------------
+        // SUBMIT TEMPAHAN
+        // ------------------
+        window.submitBooking = async (e) => {
             e.preventDefault();
             const btn = document.getElementById('btnBook');
             btn.disabled = true;
+            btn.innerText = "Sila Tunggu...";
 
             try {
-                const serviceId = document.getElementById('bService').value;
-                const serviceObj = data.services.find(s => s.id === serviceId);
+                const serviceEl = document.getElementById('bService');
+                const barberEl = document.getElementById('bBarber');
+                
+                const sName = serviceEl.options[serviceEl.selectedIndex].getAttribute('data-name');
+                const bName = barberEl.value === 'Any' ? 'Any' : barberEl.options[barberEl.selectedIndex].getAttribute('data-name');
 
-                await addDoc(getCol('bookings'), {
+                const payload = {
                     customerName: document.getElementById('bName').value,
                     phone: document.getElementById('bPhone').value,
                     date: document.getElementById('bDate').value,
                     time: document.getElementById('bTime').value,
-                    serviceId,
-                    serviceName: serviceObj?.name || 'General Appointment',
-                    barberId: document.getElementById('bBarber').value,
-                    barberName: document.getElementById('bBarber').options[document.getElementById('bBarber').selectedIndex].text,
-                    status: 'Confirmed',
-                    createdAt: Date.now()
-                });
+                    serviceId: serviceEl.value,
+                    serviceName: sName,
+                    barberId: barberEl.value,
+                    barberName: bName,
+                    status: 'Confirmed', // Boleh tukar ke 'Pending' jika perlukan admin approve dahulu
+                    createdAt: serverTimestamp()
+                };
 
-                document.getElementById('bookForm').reset();
-                navigateCust('custHomeView');
-                showAlertModal("Booking Confirmed", "Your appointment has been successfully booked!");
+                await addDoc(collection(db, 'bookings'), payload);
+                showModal("Tempahan Berjaya!", "Tempahan anda telah direkodkan ke dalam sistem kami. Terima kasih!");
 
-            } catch(e) {
-                console.error(e);
-                showAlertModal("Error", "Booking submission failed.");
+            } catch (error) {
+                console.error(error);
+                alert("Ralat semasa menghantar tempahan.");
             } finally {
                 btn.disabled = false;
+                btn.innerText = "SAHKAN TEMPAHAN";
             }
-        };
-
-        window.searchStatus = () => {
-            const num = document.getElementById('trackInput').value.trim().toUpperCase();
-            if(!num) return;
-            updateCustTracking(num);
-        };
-
-        function updateCustTracking(overrideNum) {
-            const num = overrideNum || document.getElementById('trackInput')?.value.trim().toUpperCase();
-            if(!num) return;
-
-            const target = data.queues.find(q => q.queueNumber === num);
-            const resDiv = document.getElementById('trackResult');
-            
-            if (!target) {
-                if (resDiv) resDiv.classList.add('hidden');
-                return;
-            }
-
-            resDiv.classList.remove('hidden');
-            document.getElementById('trNumber').innerText = target.queueNumber;
-            document.getElementById('trStatusBadge').innerText = target.status;
-
-            // Compute people ahead
-            const waitingBefore = data.queues.filter(q => q.status === 'Waiting' && (q.createdAt < target.createdAt));
-            document.getElementById('trAhead').innerText = target.status === 'Waiting' ? `${waitingBefore.length} people` : '0';
-            document.getElementById('trWait').innerText = target.status === 'Waiting' ? `~${waitingBefore.length * 15} mins` : 'Ready / In Service';
-
-            const counterBox = document.getElementById('trCounterBox');
-            if (target.status === 'Called' || target.status === 'Serving') {
-                counterBox.classList.remove('hidden');
-                counterBox.classList.add('flex');
-                document.getElementById('trCounter').innerText = target.counter || 'Counter 1';
-            } else {
-                counterBox.classList.add('hidden');
-            }
-        }
-
-        window.showAlertModal = (title, message) => {
-            document.getElementById('alertTitle').innerText = title;
-            document.getElementById('alertMessage').innerText = message;
-            document.getElementById('alertModal').classList.remove('hidden');
-        };
-
-        window.closeModal = (id) => {
-            document.getElementById(id).classList.add('hidden');
         };
     </script>
 </body>
