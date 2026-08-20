@@ -3,295 +3,140 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Barbershop - Tempahan & Giliran</title>
+    <title>The Q Barbershop</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: { sans: ['Inter', 'sans-serif'] },
-                    colors: { brand: '#0f172a', accent: '#3b82f6' }
-                }
-            }
-        }
-    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
-        .tab-active { border-bottom: 2px solid #3b82f6; color: #3b82f6; font-weight: 600; }
-        .tab-inactive { color: #64748b; font-weight: 500; }
+        body { font-family: 'Inter', sans-serif; background-color: #f9fafb; }
     </style>
 </head>
-<body class="antialiased min-h-screen flex flex-col items-center justify-center p-4">
+<body class="antialiased min-h-screen flex flex-col">
 
-    <!-- Loading Overlay -->
-    <div id="loadingOverlay" class="fixed inset-0 bg-white z-50 flex items-center justify-center">
-        <div class="text-center animate-pulse">
-            <div class="text-4xl mb-2">✂️</div>
-            <div class="font-bold text-gray-800">Memuatkan Sistem...</div>
+    <!-- Top Navigation Bar -->
+    <nav class="bg-[#111827] text-white px-6 py-4 flex justify-between items-center shadow-md">
+        <div class="text-xl font-bold tracking-widest uppercase">The Q Barbershop</div>
+        <div class="text-gray-300 hover:text-white cursor-pointer">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
         </div>
-    </div>
+    </nav>
 
-    <!-- Alert Modal -->
-    <div id="alertModal" class="fixed inset-0 bg-black bg-opacity-60 z-[100] hidden flex items-center justify-center p-4 backdrop-blur-sm">
-        <div class="bg-white rounded-xl shadow-2xl p-6 max-w-sm w-full text-center">
-            <h3 id="alertTitle" class="text-xl font-bold text-gray-900 mb-2">Berjaya</h3>
-            <p id="alertMessage" class="text-gray-600 mb-6 text-sm"></p>
-            <button onclick="closeModal()" class="w-full bg-brand text-white py-2.5 rounded-lg font-semibold hover:bg-gray-800 transition">Tutup</button>
-        </div>
-    </div>
-
-    <div class="w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden">
+    <!-- Main Container -->
+    <main class="flex-1 flex flex-col items-center mt-12 px-4 w-full max-w-4xl mx-auto">
         
-        <!-- Header -->
-        <div class="bg-brand p-6 text-center text-white">
-            <div class="w-16 h-16 bg-accent rounded-full mx-auto flex items-center justify-center text-2xl shadow-lg mb-3">✂️</div>
-            <h1 class="text-2xl font-bold tracking-wide">BARBERSHOP</h1>
-            <p class="text-gray-300 text-sm mt-1">Sistem Tempahan & Tiket Giliran</p>
+        <!-- VIEW 1: Main Menu -->
+        <div id="view-menu" class="w-full text-center flex flex-col items-center animate-fade-in">
+            <p class="text-sm text-gray-500 uppercase tracking-widest mb-2">Welcome to</p>
+            <h1 class="text-3xl font-extrabold text-gray-900 mb-4 uppercase">The Q Barbershop</h1>
+            <p class="text-gray-500 mb-10 max-w-md">Experience the best grooming service in town. Walk in or book your preferred time.</p>
+
+            <div class="flex flex-col sm:flex-row gap-6 w-full max-w-2xl justify-center">
+                <!-- Join Queue Button -->
+                <button onclick="showView('view-queue')" class="flex-1 bg-[#1f2937] text-white rounded-xl p-10 hover:bg-gray-900 transition flex flex-col items-center justify-center shadow-lg group">
+                    <svg class="w-10 h-10 mb-4 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                    <h3 class="text-xl font-bold mb-2">JOIN QUEUE</h3>
+                    <p class="text-sm text-gray-400">Walk in & get your number</p>
+                </button>
+
+                <!-- Book Appointment Button -->
+                <button onclick="showView('view-book')" class="flex-1 bg-[#3b82f6] text-white rounded-xl p-10 hover:bg-blue-600 transition flex flex-col items-center justify-center shadow-lg group">
+                    <svg class="w-10 h-10 mb-4 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    <h3 class="text-xl font-bold mb-2">BOOK APPOINTMENT</h3>
+                    <p class="text-sm text-blue-100">Reserve your preferred time</p>
+                </button>
+            </div>
         </div>
 
-        <!-- Tabs -->
-        <div class="flex border-b border-gray-200">
-            <button onclick="switchTab('queue')" id="tabQueue" class="flex-1 py-4 text-center tab-active transition">Ambil Giliran (Kini)</button>
-            <button onclick="switchTab('book')" id="tabBook" class="flex-1 py-4 text-center tab-inactive transition">Tempah Awal</button>
-        </div>
-
-        <div class="p-6">
-            <!-- QUEUE FORM -->
-            <form id="formQueue" onsubmit="submitQueue(event)" class="space-y-4">
+        <!-- VIEW 2: Join Queue Form -->
+        <div id="view-queue" class="hidden w-full max-w-lg bg-white rounded-xl shadow-md p-8 border border-gray-100">
+            <h2 class="text-2xl font-bold text-center mb-6 flex items-center justify-center gap-2">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path></svg>
+                Get Queue Number
+            </h2>
+            <form class="space-y-4">
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Nama Anda</label>
-                    <input type="text" id="qName" required class="w-full p-3 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-accent" placeholder="Cth: Ahmad">
-                </div>
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">No. Telefon</label>
-                    <input type="tel" id="qPhone" required class="w-full p-3 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-accent" placeholder="0123456789">
-                </div>
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Pilih Servis</label>
-                    <select id="qService" required class="w-full p-3 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-accent bg-white">
-                        <option value="">Memuatkan servis...</option>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Select Service *</label>
+                    <select class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+                        <option>Gunting Rambut Biasa - 30m</option>
                     </select>
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Pilih Barber (Pilihan)</label>
-                    <select id="qBarber" class="w-full p-3 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-accent bg-white">
-                        <option value="Any">Memuatkan barber...</option>
-                    </select>
-                </div>
-                
-                <button type="submit" id="btnQueue" class="w-full bg-accent text-white py-3.5 rounded-lg font-bold hover:bg-blue-600 transition shadow-md mt-4">
-                    AMBIL TIKET GILIRAN
-                </button>
-            </form>
-
-            <!-- BOOKING FORM -->
-            <form id="formBook" onsubmit="submitBooking(event)" class="space-y-4 hidden">
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Nama Anda</label>
-                    <input type="text" id="bName" required class="w-full p-3 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-accent" placeholder="Cth: Ahmad">
-                </div>
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">No. Telefon</label>
-                    <input type="tel" id="bPhone" required class="w-full p-3 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-accent" placeholder="0123456789">
-                </div>
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1">Tarikh</label>
-                        <input type="date" id="bDate" required class="w-full p-3 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-accent">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1">Masa</label>
-                        <input type="time" id="bTime" required class="w-full p-3 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-accent">
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Pilih Servis</label>
-                    <select id="bService" required class="w-full p-3 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-accent bg-white">
-                        <option value="">Memuatkan servis...</option>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Select Barber (Optional)</label>
+                    <select class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+                        <option>Any Barber</option>
                     </select>
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Pilih Barber (Pilihan)</label>
-                    <select id="bBarber" class="w-full p-3 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-accent bg-white">
-                        <option value="Any">Memuatkan barber...</option>
-                    </select>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Your Name *</label>
+                    <input type="text" placeholder="John Doe" class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
                 </div>
-
-                <button type="submit" id="btnBook" class="w-full bg-brand text-white py-3.5 rounded-lg font-bold hover:bg-gray-800 transition shadow-md mt-4">
-                    SAHKAN TEMPAHAN
-                </button>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number *</label>
+                    <input type="text" placeholder="0123456789" class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                <button type="button" class="w-full bg-[#111827] text-white py-3.5 rounded-lg font-bold hover:bg-gray-800 transition mt-6">JOIN QUEUE</button>
+                <div class="text-center mt-4">
+                    <button type="button" onclick="showView('view-menu')" class="text-gray-500 hover:text-gray-800 text-sm font-medium">Cancel</button>
+                </div>
             </form>
         </div>
-    </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.0/firebase-app.js";
-        import { getFirestore, collection, getDocs, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.3.0/firebase-firestore.js";
+        <!-- VIEW 3: Book Appointment Form -->
+        <div id="view-book" class="hidden w-full max-w-lg bg-white rounded-xl shadow-md p-8 border border-gray-100">
+            <h2 class="text-2xl font-bold text-center mb-6 flex items-center justify-center gap-2">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                Book Appointment
+            </h2>
+            <form class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Select Service *</label>
+                    <select class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                        <option>Select Service</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Select Barber *</label>
+                    <select class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                        <option>Select Barber</option>
+                    </select>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Date *</label>
+                        <input type="date" class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Time *</label>
+                        <input type="time" class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Your Name *</label>
+                    <input type="text" placeholder="John Doe" class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number *</label>
+                    <input type="text" placeholder="0123456789" class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                <button type="button" class="w-full bg-[#111827] text-white py-3.5 rounded-lg font-bold hover:bg-gray-800 transition mt-6">CONFIRM BOOKING</button>
+                <div class="text-center mt-4">
+                    <button type="button" onclick="showView('view-menu')" class="text-gray-500 hover:text-gray-800 text-sm font-medium">Cancel</button>
+                </div>
+            </form>
+        </div>
 
-        // Guna config Firebase yang sama seperti Owner Portal
-        const firebaseConfig = {
-            apiKey: "AIzaSyBKVXr6MNUn6XiHCCRo69fiGa5BFmhHoSI",
-            authDomain: "fullsystem-fbed2.firebaseapp.com",
-            projectId: "fullsystem-fbed2",
-            storageBucket: "fullsystem-fbed2.firebasestorage.app",
-            messagingSenderId: "1074278839562",
-            appId: "1:1074278839562:web:a2eddc8225c9d65c1076f3"
-        };
+    </main>
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
-        // Kawalan Tab
-        window.switchTab = (tab) => {
-            if (tab === 'queue') {
-                document.getElementById('formQueue').classList.remove('hidden');
-                document.getElementById('formBook').classList.add('hidden');
-                document.getElementById('tabQueue').className = 'flex-1 py-4 text-center tab-active transition';
-                document.getElementById('tabBook').className = 'flex-1 py-4 text-center tab-inactive transition';
-            } else {
-                document.getElementById('formQueue').classList.add('hidden');
-                document.getElementById('formBook').classList.remove('hidden');
-                document.getElementById('tabBook').className = 'flex-1 py-4 text-center tab-active transition';
-                document.getElementById('tabQueue').className = 'flex-1 py-4 text-center tab-inactive transition';
-            }
-        };
-
-        window.closeModal = () => {
-            document.getElementById('alertModal').classList.add('hidden');
-            document.getElementById('formQueue').reset();
-            document.getElementById('formBook').reset();
-        };
-
-        function showModal(title, msg) {
-            document.getElementById('alertTitle').innerText = title;
-            document.getElementById('alertMessage').innerText = msg;
-            document.getElementById('alertModal').classList.remove('hidden');
+    <script>
+        // Fungsi mudah untuk tukar paparan form (macam dalam video)
+        function showView(viewId) {
+            document.getElementById('view-menu').classList.add('hidden');
+            document.getElementById('view-queue').classList.add('hidden');
+            document.getElementById('view-book').classList.add('hidden');
+            
+            document.getElementById(viewId).classList.remove('hidden');
         }
-
-        // Ambil Data Servis dan Barber secara "Live" semasa page dibuka
-        async function loadDropdownData() {
-            try {
-                // Ambil Services
-                const serviceSnap = await getDocs(collection(db, 'services'));
-                let serviceHTML = '<option value="">-- Sila Pilih Servis --</option>';
-                serviceSnap.forEach(doc => {
-                    const data = doc.data();
-                    serviceHTML += `<option value="${doc.id}" data-name="${data.name}">${data.name} (RM${data.price.toFixed(2)})</option>`;
-                });
-                
-                // Masukkan ke dropdown form Queue & Book
-                document.getElementById('qService').innerHTML = serviceHTML;
-                document.getElementById('bService').innerHTML = serviceHTML;
-
-                // Ambil Barbers
-                const barberSnap = await getDocs(collection(db, 'barbers'));
-                let barberHTML = '<option value="Any">Mana-mana Barber (Any)</option>';
-                barberSnap.forEach(doc => {
-                    const data = doc.data();
-                    barberHTML += `<option value="${doc.id}" data-name="${data.name}">${data.name}</option>`;
-                });
-
-                // Masukkan ke dropdown form Queue & Book
-                document.getElementById('qBarber').innerHTML = barberHTML;
-                document.getElementById('bBarber').innerHTML = barberHTML;
-
-                // Tutup Loading screen selepas data siap dimuat turun
-                document.getElementById('loadingOverlay').classList.add('hidden');
-
-            } catch (error) {
-                console.error("Gagal muat data:", error);
-                alert("Gagal berhubung ke pangkalan data. Sila refresh halaman.");
-            }
-        }
-
-        // Jalankan fungsi load data
-        loadDropdownData();
-
-        // ------------------
-        // SUBMIT GILIRAN
-        // ------------------
-        window.submitQueue = async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('btnQueue');
-            btn.disabled = true;
-            btn.innerText = "Sila Tunggu...";
-
-            try {
-                const serviceEl = document.getElementById('qService');
-                const barberEl = document.getElementById('qBarber');
-                
-                const sName = serviceEl.options[serviceEl.selectedIndex].getAttribute('data-name');
-                const bName = barberEl.value === 'Any' ? 'Any' : barberEl.options[barberEl.selectedIndex].getAttribute('data-name');
-
-                // Hasilkan nombor giliran automatik (cth: A-842)
-                const ranNum = Math.floor(100 + Math.random() * 900);
-                const qNumber = "A" + ranNum;
-
-                const payload = {
-                    customerName: document.getElementById('qName').value,
-                    phone: document.getElementById('qPhone').value,
-                    serviceId: serviceEl.value,
-                    serviceName: sName,
-                    barberId: barberEl.value,
-                    barberName: bName,
-                    queueNumber: qNumber,
-                    status: 'Waiting',
-                    createdAt: serverTimestamp()
-                };
-
-                await addDoc(collection(db, 'queues'), payload);
-                showModal("Tiket Berjaya Diambil!", `Nombor giliran anda ialah: ${qNumber}\nSila tunggu sehingga nombor anda dipanggil di skrin TV.`);
-
-            } catch (error) {
-                console.error(error);
-                alert("Ralat semasa mengambil tiket giliran.");
-            } finally {
-                btn.disabled = false;
-                btn.innerText = "AMBIL TIKET GILIRAN";
-            }
-        };
-
-        // ------------------
-        // SUBMIT TEMPAHAN
-        // ------------------
-        window.submitBooking = async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('btnBook');
-            btn.disabled = true;
-            btn.innerText = "Sila Tunggu...";
-
-            try {
-                const serviceEl = document.getElementById('bService');
-                const barberEl = document.getElementById('bBarber');
-                
-                const sName = serviceEl.options[serviceEl.selectedIndex].getAttribute('data-name');
-                const bName = barberEl.value === 'Any' ? 'Any' : barberEl.options[barberEl.selectedIndex].getAttribute('data-name');
-
-                const payload = {
-                    customerName: document.getElementById('bName').value,
-                    phone: document.getElementById('bPhone').value,
-                    date: document.getElementById('bDate').value,
-                    time: document.getElementById('bTime').value,
-                    serviceId: serviceEl.value,
-                    serviceName: sName,
-                    barberId: barberEl.value,
-                    barberName: bName,
-                    status: 'Confirmed', // Boleh tukar ke 'Pending' jika perlukan admin approve dahulu
-                    createdAt: serverTimestamp()
-                };
-
-                await addDoc(collection(db, 'bookings'), payload);
-                showModal("Tempahan Berjaya!", "Tempahan anda telah direkodkan ke dalam sistem kami. Terima kasih!");
-
-            } catch (error) {
-                console.error(error);
-                alert("Ralat semasa menghantar tempahan.");
-            } finally {
-                btn.disabled = false;
-                btn.innerText = "SAHKAN TEMPAHAN";
-            }
-        };
     </script>
 </body>
 </html>
